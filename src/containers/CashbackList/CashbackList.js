@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
 import numeral from 'numeral';
+import axios from 'axios';
 
 // Components
 import Container from 'components/Container/Container';
@@ -13,9 +14,6 @@ import CustomModal from 'components/CustomModal/CustomModal';
 
 // Containers
 import PurchaseForm from 'containers/PurchaseForm/PurchaseForm'
-
-// Services
-import { CashbackService } from 'services';
 
 numeral.register('locale', 'pt-BR', {
     delimiters: {
@@ -150,6 +148,7 @@ function CashbackList(props) {
     const { history } = props;
     const [openModal, setOpenModal] = useState(false);
     const [currentCode, setCurrentCode] = useState(null);
+    const [totalCashback, setTotalCashback] = useState(0);
     const [tableHeaders,] = useState([
         'Compra', 'Valor', 'Data', 'Cashback (%)', 'Cashback (R$)', 'Status', 'Ações'
     ]);
@@ -170,9 +169,11 @@ function CashbackList(props) {
 
     const getCashbackTotal = async () => {
         const cpf = localStorage.getItem('userActive');
-        const response = await CashbackService.CashbackByCPF(cpf)
 
-        console.log(response)
+        axios.get(`/v1/cashback?cpf=${cpf}`)
+            .then(res => {
+                setTotalCashback(res.data.body.credit)
+            })
 
         return 
     }
@@ -278,7 +279,7 @@ function CashbackList(props) {
                 }
             </Panel>
             <TotalWrapper>
-                Cashback total: <strong>{numeral(0).format('0.0,[00]')}</strong>
+                Cashback total: <strong>{numeral(totalCashback).format('$ 0.0,[00]')}</strong>
             </TotalWrapper>
             <CustomModal isOpen={openModal}>
                 <PurchaseForm
