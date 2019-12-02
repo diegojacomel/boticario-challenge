@@ -95,6 +95,8 @@ function Register(props) {
                     email: '',
                     password: ''
                 })
+
+                history.push('/Login')
             }
         } else {
             setShowError(true)

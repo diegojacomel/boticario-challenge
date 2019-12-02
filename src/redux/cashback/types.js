@@ -1,4 +1,4 @@
 /* Create action types */
 import createActionTypes from '../createActionTypes';
 
-export const SEND_REGISTER = createActionTypes('SEND_REGISTER');
+export const GET_CASHBACK_TOTAL = createActionTypes('GET_CASHBACK_TOTAL');

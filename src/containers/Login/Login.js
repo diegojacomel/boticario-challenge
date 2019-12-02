@@ -61,13 +61,24 @@ function Login(props) {
         }
     }, [history])
 
+    const changeCPF = (cpf) => {
+        const customCpf = cpf.replace('.', '').replace('.', '').replace('.', '').replace('-', '');
+
+        return customCpf;
+    }
+
     const handleSubmit = () => {
         if (loginData.email.length && loginData.password.length && validateEmail(loginData.email) === null) {
             const localRegisterData = JSON.parse(localStorage.getItem('register'));
 
             if (!!localRegisterData && !!localRegisterData.some(x => x.password === loginData.password) && !!localRegisterData.some(x => x.email === loginData.email)) {
+                const userActive = localRegisterData.find(x => x.email === loginData.email).cpf;
+
                 localStorage.setItem('logged', true)
+                localStorage.setItem('userActive', changeCPF(userActive))
                 history.push('/CashbackList')
+            } else {
+                alert('Usuário ainda não cadastrado!')
             }
         } else {
             setShowError(true)

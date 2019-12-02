@@ -1,6 +1,6 @@
 // Types
 import {
-    SEND_REGISTER
+    GET_CASHBACK_TOTAL
 } from './types';
 
 const INITIAL_STATE = {
@@ -18,24 +18,24 @@ const INITIAL_STATE = {
 
 const cashbackReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
-        case SEND_REGISTER.REQUEST:
+        case GET_CASHBACK_TOTAL.REQUEST:
             return {
                 ...state,
             }
 
-        case SEND_REGISTER.SUCCESS:
-            return {
-                ...state,
-                action: action.response
-            }
-
-        case SEND_REGISTER.FAILURE:
+        case GET_CASHBACK_TOTAL.SUCCESS:
             return {
                 ...state,
                 action: action.response
             }
 
-        case SEND_REGISTER.RESET:
+        case GET_CASHBACK_TOTAL.FAILURE:
+            return {
+                ...state,
+                action: action.response
+            }
+
+        case GET_CASHBACK_TOTAL.RESET:
             return {
                 ...state,
             }

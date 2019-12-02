@@ -6,7 +6,7 @@ import { CashbackService } from 'services';
 
 /* Types */
 import {
-    SEND_REGISTER
+    GET_CASHBACK_TOTAL
 } from './types';
 
 function* sendRegister(action) {
@@ -14,13 +14,13 @@ function* sendRegister(action) {
         const response = yield call(CashbackService.CashbackByCPF, action.cpf);
 
         if (response.status === 200) {
-            yield put({ type: SEND_REGISTER.SUCCESS, response: response });
+            yield put({ type: GET_CASHBACK_TOTAL.SUCCESS, response: response });
         }
     } catch(e) {
-        yield put({ type: SEND_REGISTER.FAILURE, response: e.response });
+        yield put({ type: GET_CASHBACK_TOTAL.FAILURE, response: e.response });
     }
 }
 
 export const cashbackSaga = [
-    takeEvery(SEND_REGISTER.REQUEST, sendRegister),
+    takeEvery(GET_CASHBACK_TOTAL.REQUEST, sendRegister),
 ];

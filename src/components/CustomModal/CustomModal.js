@@ -28,6 +28,7 @@ ${({ theme }) => `
     padding: ${theme.spacing.px30};
     box-sizing: border-box;
     @media screen and (max-width: 700px) {
+        padding: ${theme.spacing.px30} ${theme.spacing.px10};
         width: 300px;
     }
 `}`
