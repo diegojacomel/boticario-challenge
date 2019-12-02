@@ -19,6 +19,8 @@ ${({ theme }) =>`
     min-height: 100vh;
     background: ${theme.colors.grey3};
     position: relative;
+    padding-bottom: ${theme.spacing.px90};
+    box-sizing: border-box;
 `}`
 
 const ImageWrapper = styled('figure')`

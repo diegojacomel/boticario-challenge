@@ -7,8 +7,11 @@ import { withRouter } from 'react-router';
 import Login from 'containers/Login/Login';
 import Register from 'containers/Register/Register';
 import Developer from 'containers/Developer/Developer';
+import CashbackList from 'containers/CashbackList/CashbackList';
 
 function MyRouter() {
+    const logged = localStorage.getItem('logged');
+
     return (
         <Switch>
             <Route
@@ -27,6 +30,14 @@ function MyRouter() {
             <Route exact path="/Developer">
                 <Developer />
             </Route>
+            {logged === 'true'
+                ?
+                <Route exact path="/CashbackList">
+                    <CashbackList />
+                </Route>
+                :
+                <Redirect to="/Login" />
+            }
             <Route exact>
                 <Redirect to="/Register" />
             </Route>

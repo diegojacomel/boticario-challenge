@@ -11,6 +11,7 @@ ${({ theme, maxWidth }) =>`
     border-radius: ${theme.rounded.px10};
     padding: ${theme.spacing.px30};
     box-shadow: 0 0.625rem 1.875rem ${theme.colors.grey2};
+    box-sizing: border-box;
     ${maxWidth
         ?
         `max-width: ${maxWidth};`

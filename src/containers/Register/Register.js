@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 // Components
 import Container from 'components/Container/Container';
@@ -12,9 +13,6 @@ import Label from 'components/Label/Label';
 import Input from 'components/Input/Input';
 import Button from 'components/Button/Button';
 import { Link } from 'react-router-dom';
-
-// Types
-import { SEND_REGISTER } from 'redux/cashback/types';
 
 const RegisterWrapper = styled('div')`
 ${({ theme }) =>`
@@ -50,7 +48,7 @@ ${({ theme }) =>`
 `}`
 
 function Register(props) {
-    const { dispatch } = props;
+    const { history } = props;
     const [registerData, setRegisterData] = useState({
         name: '',
         cpf: '',
@@ -59,16 +57,45 @@ function Register(props) {
     });
     const [showError, setShowError] = useState(false);
 
-    // useEffect(() => {
-    //     dispatch({
-    //         type: SEND_REGISTER.REQUEST,
-    //         cpf: '12312312312'
-    //     })
-    // }, [])
+    useEffect(() => {
+        if (localStorage.getItem('logged') === 'true') {
+            history.push('/CashbackList')
+        }
+    }, [history])
 
     const handleSubmit = () => {
-        if (registerData.name.length &&  registerData.cpf.length && registerData.email.length && registerData.password.length && validateCPF(registerData.cpf) && validateEmail(registerData.email)) {
-            console.log('Enviar para a outra página')
+        if (registerData.name.length && registerData.cpf.length && registerData.email.length && registerData.password.length && validateCPF(registerData.cpf) === null && validateEmail(registerData.email) === null) {
+            const localRegisterData = JSON.parse(localStorage.getItem('register'));
+
+            if (!!localRegisterData && !!localRegisterData.some(x => x.cpf === registerData.cpf) && !!localRegisterData.some(x => x.email === registerData.email)) {
+                alert(`Usuário já cadastrado!`)
+            } else {
+                let strRegistertData = [];
+
+                if (!!localRegisterData) {
+                    strRegistertData = JSON.stringify([
+                        ...localRegisterData,
+                        registerData
+                    ]);
+                } else {
+                    strRegistertData = JSON.stringify([
+                        registerData
+                    ]);
+                }
+
+                localStorage.setItem('register', [
+                    strRegistertData
+                ])
+
+                alert(`Usuário cadastrado com sucesso!`)
+
+                setRegisterData({
+                    name: '',
+                    cpf: '',
+                    email: '',
+                    password: ''
+                })
+            }
         } else {
             setShowError(true)
         }
@@ -122,25 +149,25 @@ function Register(props) {
     const validateCPF = (cpf) => {
         const regex = /^\d{3}.\d{3}.\d{3}-\d{2}$/;
 
-        if (!!showError) {
-            if (!cpf) {
-                return 'Campo obrigatório'
-            } else if (!testCPF(cpf) || (!!cpf && !regex.test(cpf))) {
-                return 'CPF inválido'
-            }
+        if (!cpf) {
+            return 'Campo obrigatório'
+        } else if (!testCPF(cpf) || (!!cpf && !regex.test(cpf))) {
+            return 'CPF inválido'
         }
+
+        return null
     }
 
     const validateEmail = (email) => {
         const regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/gi;
 
-        if (!!showError) {
-            if (!email) {
-                return 'Campo obrigatório'
-            } else if (!!email && !regex.test(email)) {
-                return 'Email inválido'
-            }
+        if (!email) {
+            return 'Campo obrigatório'
+        } else if (!!email && !regex.test(email)) {
+            return 'Email inválido'
         }
+
+        return null
     }
 
     return (
@@ -182,7 +209,7 @@ function Register(props) {
                                         ...registerData,
                                         cpf: e.target.value
                                     })}
-                                    error={validateCPF(registerData.cpf)}
+                                    error={registerData.cpf.length === 14 ? validateCPF(registerData.cpf) : null}
                                 />
                             </FormControl>
                             <FormControl>
@@ -198,7 +225,7 @@ function Register(props) {
                                         ...registerData,
                                         email: e.target.value
                                     })}
-                                    error={validateEmail(registerData.email)}
+                                    error={!!registerData.email.length ? validateEmail(registerData.email) : null}
                                 />
                             </FormControl>
                             <FormControl>
@@ -228,7 +255,7 @@ function Register(props) {
                                 Ir para o Login.
                             </strong>
                         </CustomLink>
-                        <Button backgroundColor="blue2" onClick={() => handleSubmit()}>
+                        <Button backgroundColor="blue2" onClick={() => handleSubmit()} disabled={!registerData.name.length || !registerData.cpf.length || !registerData.email.length || !registerData.password.length || validateCPF(registerData.cpf) !== null || validateEmail(registerData.email) !== null || registerData.cpf.length < 14}>
                             Cadastrar
                         </Button>
                     </RegisterFooter>
@@ -238,4 +265,4 @@ function Register(props) {
     )
 }
 
-export default connect()(Register);
+export default withRouter(connect()(Register));

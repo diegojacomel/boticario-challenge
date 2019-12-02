@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 // Components
 import Container from 'components/Container/Container';
@@ -46,16 +47,28 @@ ${({ theme }) =>`
     }
 `}`
 
-function Login() {
+function Login(props) {
+    const { history } = props;
     const [loginData, setLoginData] = useState({
         email: '',
         password: ''
     });
     const [showError, setShowError] = useState(false);
 
+    useEffect(() => {
+        if (localStorage.getItem('logged') === 'true') {
+            history.push('/CashbackList')
+        }
+    }, [history])
+
     const handleSubmit = () => {
-        if (loginData.email.length && loginData.password.length && !validateEmail(loginData.email)) {
-            console.log('Enviar para a outra página')
+        if (loginData.email.length && loginData.password.length && validateEmail(loginData.email) === null) {
+            const localRegisterData = JSON.parse(localStorage.getItem('register'));
+
+            if (!!localRegisterData && !!localRegisterData.some(x => x.password === loginData.password) && !!localRegisterData.some(x => x.email === loginData.email)) {
+                localStorage.setItem('logged', true)
+                history.push('/CashbackList')
+            }
         } else {
             setShowError(true)
         }
@@ -64,15 +77,13 @@ function Login() {
     const validateEmail = (email) => {
         const regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/gi;
 
-        if (!!showError) {
-            if (!email) {
-                return 'Campo obrigatório'
-            } else if (!!email && !regex.test(email)) {
-                return 'Email inválido'
-            }
+        if (!email) {
+            return 'Campo obrigatório'
+        } else if (!!email && !regex.test(email)) {
+            return 'Email inválido'
         }
 
-        return ''
+        return null
     }
 
     return (
@@ -97,7 +108,7 @@ function Login() {
                                         ...loginData,
                                         email: e.target.value
                                     })}
-                                    error={validateEmail(loginData.email)}
+                                    error={!!loginData.email.length ? validateEmail(loginData.email) : null}
                                 />
                             </FormControl>
                             <FormControl>
@@ -137,4 +148,4 @@ function Login() {
     )
 }
 
-export default connect()(Login);
+export default withRouter(connect()(Login));

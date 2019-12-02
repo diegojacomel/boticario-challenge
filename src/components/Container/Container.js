@@ -4,15 +4,24 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 const ContainerWrapper = styled('div')`
-${({ theme }) =>`
+${({ theme, flex }) =>`
     width: ${theme.spacing.full};
     padding: ${theme.spacing.none} ${theme.spacing.px30};
     box-sizing: border-box;
+    ${flex
+        ?
+        `
+        display: flex;
+        justify-content: center;
+        `
+        :
+        ``
+    }
 `}`
 
-function Container({ children }) {
+function Container({ children, flex }) {
     return (
-        <ContainerWrapper>
+        <ContainerWrapper flex={flex}>
             {children}
         </ContainerWrapper>
     )
